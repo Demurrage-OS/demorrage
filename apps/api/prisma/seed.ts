@@ -194,7 +194,7 @@ async function main() {
   }
 
   console.log('Creating containers and events...');
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 20; i++) {
     const shipment = shipments[i % shipments.length];
     const carrier = carriers[i % carriers.length];
     const cfs = i % 2 === 0 ? cfsKochi : cfsChennai;
