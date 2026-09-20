@@ -212,7 +212,7 @@ async function main() {
         carrierId: carrier.id,
         cfsId: deliveryMode !== 'DPD_DIRECT' ? cfs.id : null,
         dischargeDate,
-        dischargePort: cfs.port.code,
+        dischargePort: cfs === cfsKochi ? portKochi.code : portChennai.code,
         hsCode: `${8400 + (i % 100).toString().padStart(3, '0')}`,
         goodsDescription: ['Electronics', 'Textiles', 'Machinery', 'Chemicals'][i % 4],
         quantity: Math.floor(Math.random() * 100) + 10,
