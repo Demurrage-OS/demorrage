@@ -2,25 +2,24 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy root package files
-COPY package.json package-lock.json tsconfig.json turbo.json ./
+# Copy package definition and Prisma
+COPY package*.json ./
+COPY tsconfig*.json ./
+COPY prisma ./prisma/
 
-# Copy app package files
-COPY apps/api/package.json apps/api/package-lock.json ./apps/api/
-COPY apps/api/tsconfig.json ./apps/api/
-
-# Copy Prisma schema
-COPY apps/api/prisma ./apps/api/prisma
-
-# Install dependencies
-RUN npm ci
+# Install dependencies and generate Prisma client
+RUN npm install
+RUN npx prisma generate
 
 # Copy source code
-COPY apps/api/src ./apps/api/src
+COPY src ./src
 
-# Build
-RUN npm run build --workspace=@demurrageos/api
+# Build TypeScript to dist
+RUN npm run build
 
 EXPOSE 3000
 
-CMD ["node", "apps/api/dist/server.js"]
+ENV PORT=3000
+ENV NODE_ENV=production
+
+CMD ["node", "dist/server.js"]
