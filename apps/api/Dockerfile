@@ -8,7 +8,7 @@ COPY tsconfig*.json ./
 COPY prisma ./prisma/
 
 # Install dependencies and generate Prisma client
-RUN npm install
+RUN npm install --legacy-peer-deps
 RUN npx prisma generate
 
 # Copy source code
