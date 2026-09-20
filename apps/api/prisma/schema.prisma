@@ -139,7 +139,7 @@ model Container {
   goodsDescription String?
   quantity        Int?
   uom             String?  // Unit of Measure
-  declaredValue   Decimal? @db.Numeric(15, 2)
+  declaredValue   Decimal?
   currency        String?  @default("USD")
 
   // Flags
@@ -182,7 +182,7 @@ model ContainerEvent {
   timezone        String?
 
   // Metadata & Idempotency
-  metadata        String?  @db.Json
+  metadata        Json?
   idempotencyKey  String?
 
   createdAt       DateTime @default(now())
@@ -257,10 +257,10 @@ model Tariff {
   effectiveTo     DateTime?
 
   // Rates
-  demurrageRate   Decimal  @db.Numeric(15, 4)
-  detentionRate   Decimal  @db.Numeric(15, 4)
-  storageRate     Decimal? @db.Numeric(15, 4)
-  groundRentRate  Decimal? @db.Numeric(15, 4)
+  demurrageRate   Decimal
+  detentionRate   Decimal
+  storageRate     Decimal?
+  groundRentRate  Decimal?
 
   // Slabs
   freeDays        Int      @default(5)
@@ -290,7 +290,7 @@ model Charge {
 
   // Calculation
   chargeType      String   // DEMURRAGE, DETENTION, STORAGE, GROUND_RENT, SHIFTING_CHARGE
-  amount          Decimal  @db.Numeric(15, 2)
+  amount          Decimal
   currency        String   @default("INR")
 
   // Free time & exposure
@@ -299,7 +299,7 @@ model Charge {
 
   // Calculation provenance
   calculationVersion String?
-  calculationInputs String? @db.Json
+  calculationInputs Json?
   tariffVersion   Int?
   appliedTariffEffectiveFrom DateTime?
   appliedTariffEffectiveTo DateTime?
@@ -309,8 +309,6 @@ model Charge {
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
-
-  auditLogs       AuditLog[]
 
   @@index([containerId])
   @@index([chargeType])
@@ -328,10 +326,10 @@ model ComplianceSignal {
   container       Container @relation(fields: [containerId], references: [id], onDelete: Cascade)
 
   signalType      String   // DOC_COMPLETENESS, HS_CODE_NOVELTY, AEO_ACP_STATUS, VALUATION_CONSISTENCY
-  score           Float    @db.Numeric(5, 2)
+  score           Float
   source          String   @default("MANUAL") // MANUAL, DERIVED, AI
 
-  metadata        String?  @db.Json
+  metadata        Json?
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -397,7 +395,7 @@ model Task {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  auditLogs       AuditLog[]
+  notifications   Notification[]
 
   @@index([containerId])
   @@index([status])
@@ -461,7 +459,6 @@ model Document {
   updatedAt       DateTime @updatedAt
 
   extractions     DocumentExtraction[]
-  auditLogs       AuditLog[]
 
   @@index([containerId])
   @@index([documentType])
@@ -475,8 +472,8 @@ model DocumentExtraction {
   document        Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
   // Extraction result
-  extractedFields String   @db.Json // Structured extraction
-  confidence      Float    @db.Numeric(5, 2)
+  extractedFields Json     // Structured extraction
+  confidence      Float
   flaggedForReview Boolean  @default(false)
 
   // Provenance
@@ -486,7 +483,7 @@ model DocumentExtraction {
   extractionSchema String?
 
   // Metadata
-  metadata        String?  @db.Json
+  metadata        Json?
 
   // Status
   status          String   @default("EXTRACTED") // EXTRACTED, ACCEPTED, CORRECTED, REJECTED
@@ -546,11 +543,11 @@ model ImportRow {
 
   // Row data
   rowNumber       Int
-  data            String   @db.Json
+  data            Json
 
   // Validation
   status          String   @default("PENDING") // PENDING, VALIDATED, ERROR
-  errors          String?  @db.Json
+  errors          Json?
 
   // Result
   createdContainerId String?
@@ -576,8 +573,8 @@ model AuditLog {
   entityType      String   // Container, Charge, Task, Document, etc.
   entityId        String
 
-  beforeState     String?  @db.Json
-  afterState      String?  @db.Json
+  beforeState     Json?
+  afterState      Json?
 
   // Request context
   requestId       String?
@@ -603,7 +600,7 @@ model OutboxEvent {
   aggregateId     String
   eventType       String
 
-  payload         String   @db.Json
+  payload         Json
 
   processed       Boolean  @default(false)
   processedAt     DateTime?

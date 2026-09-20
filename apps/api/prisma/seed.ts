@@ -28,7 +28,7 @@ async function main() {
   await prisma.organization.deleteMany();
   await prisma.carrier.deleteMany();
   await prisma.customs.deleteMany();
-  await prisma.cfs.deleteMany();
+  await prisma.cFS.deleteMany();
   await prisma.port.deleteMany();
   await prisma.tariff.deleteMany();
 
@@ -121,7 +121,7 @@ async function main() {
     },
   });
 
-  const cfsKochi = await prisma.cfs.create({
+  const cfsKochi = await prisma.cFS.create({
     data: {
       portId: portKochi.id,
       name: 'Kochi Container Freight Station',
@@ -130,7 +130,7 @@ async function main() {
     },
   });
 
-  const cfsChennai = await prisma.cfs.create({
+  const cfsChennai = await prisma.cFS.create({
     data: {
       portId: portChennai.id,
       name: 'Chennai Container Freight Station',
